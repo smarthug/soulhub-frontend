@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 // import './App.css';
 // import './index.css'
-import "bootstrap/dist/css/bootstrap.css";
+// import "bootstrap/dist/css/bootstrap.css";
 import "@mysten/dapp-kit/dist/index.css";
 import {
   useCurrentAccount,
