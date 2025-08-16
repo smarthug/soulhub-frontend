@@ -21,28 +21,150 @@ import  Mermaid  from '@/components/common/Mermaid'
 //   c7 --> c8["c8: docs: README"]
 // `;
 
+// const mmd = `
+// flowchart TD
+//   c1["c1: init character base"]
+//   c2["c2: add friendly tone"]
+//   c3["c3: branch: humor-mode"]
+//   c4["c4: refine humor responses"]
+//   c5["c5: branch: strict-mode"]
+//   c6["c6: enforce concise replies"]
+//   c7["c7: merge humor + strict personality"]
+//   c8["c8: add empathy layer"]
+//   c9["c9: safety review + seal A"]
+
+//   c1 --> c2
+//   c2 --> c3
+//   c3 --> c4
+//   c2 --> c5
+//   c5 --> c6
+//   c2 --> c7
+//   c4 --> c7
+//   c6 --> c7
+//   c7 --> c8
+//   c8 --> c9
+// `;
+
+// const mmd = `
+// flowchart TD
+//   %% ========== Legend ==========
+//   classDef base fill:#e2e8f0,stroke:#94a3b8,color:#0f172a
+//   classDef humor fill:#dbeafe,stroke:#60a5fa,color:#0c4a6e
+//   classDef strict fill:#fee2e2,stroke:#f87171,color:#7f1d1d
+//   classDef empathy fill:#dcfce7,stroke:#34d399,color:#065f46
+//   classDef creative fill:#fae8ff,stroke:#d946ef,color:#701a75
+//   classDef expert fill:#fef9c3,stroke:#facc15,color:#713f12
+//   classDef merge fill:#e9d5ff,stroke:#a78bfa,color:#3730a3
+//   classDef review fill:#f1f5f9,stroke:#475569,color:#0f172a,stroke-width:2px
+
+//   %% ========== Base ==========
+//   c1["c1: Initialize character base"]:::base
+//   c2["c2: Add friendly tone"]:::base
+//   c1 --> c2
+
+//   %% ========== Humor Branch ==========
+//   subgraph Humor
+//     direction TB
+//     c3["c3: branch: humor-mode"]:::humor
+//     c4["c4: Refine humor responses"]:::humor
+//     c3 --> c4
+//   end
+
+//   %% ========== Strict Branch ==========
+//   subgraph Strict
+//     direction TB
+//     c5["c5: branch: strict-mode"]:::strict
+//     c6["c6: Enforce concise replies"]:::strict
+//     c5 --> c6
+//   end
+
+//   %% ========== Empathy Branch ==========
+//   subgraph Empathy
+//     direction TB
+//     c7["c7: branch: empathy-mode"]:::empathy
+//     c8["c8: Add supportive phrases"]:::empathy
+//     c7 --> c8
+//   end
+
+//   %% ========== Creative Branch ==========
+//   subgraph Creative
+//     direction TB
+//     c9["c9: branch: creative-mode"]:::creative
+//     c10["c10: Metaphors & storytelling"]:::creative
+//     c9 --> c10
+//   end
+
+//   %% ========== Expert Branch ==========
+//   subgraph Expert
+//     direction TB
+//     c11["c11: branch: expert-mode"]:::expert
+//     c12["c12: Add technical depth"]:::expert
+//     c11 --> c12
+//   end
+
+//   %% ========== Wire roots from base ==========
+//   c2 --> c3
+//   c2 --> c5
+//   c2 --> c7
+//   c2 --> c9
+//   c2 --> c11
+
+//   %% ========== Merges ==========
+//   c13["c13: Merge humor + strict"]:::merge
+//   c4 --> c13
+//   c6 --> c13
+
+//   c14["c14: Merge empathy + creativity"]:::merge
+//   c8 --> c14
+//   c10 --> c14
+
+//   c15["c15: Unified multi-trait personality"]:::merge
+//   c13 --> c15
+//   c14 --> c15
+//   c12 --> c15
+
+//   c16["c16: Safety review + Seal A"]:::review
+//   c15 --> c16
+// `;
+
+
 const mmd = `
 flowchart TD
-  c1["c1: init character base"]
-  c2["c2: add friendly tone"]
-  c3["c3: branch: humor-mode"]
-  c4["c4: refine humor responses"]
-  c5["c5: branch: strict-mode"]
-  c6["c6: enforce concise replies"]
-  c7["c7: merge humor + strict personality"]
-  c8["c8: add empathy layer"]
-  c9["c9: safety review + seal A"]
+  %% Styles
+  classDef base fill:#e2e8f0,stroke:#94a3b8,color:#0f172a
+  classDef humor fill:#dbeafe,stroke:#60a5fa,color:#0c4a6e
+  classDef strict fill:#fee2e2,stroke:#f87171,color:#7f1d1d
+  classDef empathy fill:#dcfce7,stroke:#34d399,color:#065f46
+  classDef creative fill:#fae8ff,stroke:#d946ef,color:#701a75
+  classDef expert fill:#fef9c3,stroke:#facc15,color:#713f12
+  classDef hybrid fill:#e9d5ff,stroke:#a78bfa,color:#3730a3
 
+  %% Base
+  c1["c1: Initialize base character"]:::base
+  c2["c2: Add friendly tone"]:::base
   c1 --> c2
-  c2 --> c3
-  c3 --> c4
-  c2 --> c5
-  c5 --> c6
-  c2 --> c7
-  c4 --> c7
-  c6 --> c7
-  c7 --> c8
-  c8 --> c9
+
+  %% Independent branches
+  c2 --> h1["h1: branch/humor-mode"]:::humor
+  h1 --> h2["h2: More witty jokes"]:::humor
+
+  c2 --> s1["s1: branch/strict-mode"]:::strict
+  s1 --> s2["s2: Precise, short answers"]:::strict
+
+  c2 --> e1["e1: branch/empathy-mode"]:::empathy
+  e1 --> e2["e2: Supportive mentor style"]:::empathy
+
+  c2 --> cr1["cr1: branch/creative-mode"]:::creative
+  cr1 --> cr2["cr2: Storytelling & metaphors"]:::creative
+
+  c2 --> ex1["ex1: branch/expert-mode"]:::expert
+  ex1 --> ex2["ex2: Technical deep-dive"]:::expert
+
+  %% Optional hybrid merges
+  e2 --> he1["he1: Playful Mentor (Humor+Empathy)"]:::hybrid
+  cr2 --> ce1["ce1: Visionary Storyteller (Creative+Expert)"]:::hybrid
+
+  %% No single merge point – branches evolve separately
 `;
 
 export default function Character(){
