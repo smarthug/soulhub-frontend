@@ -4,6 +4,46 @@ import { SafetySeal } from '@/components/ai/SafetySeal'
 import { IngredientTable } from '@/components/ai/IngredientTable'
 import { CommitTimeline } from '@/components/ai/CommitTimeline'
 import { Button } from '@/components/common/Button'
+import  Mermaid  from '@/components/common/Mermaid'
+
+
+
+// const mmd = `
+// flowchart LR
+//   c1["c1: init"] --> c2["c2: add character json"]
+//   c2 --> c3["c3: feature/safety"]
+//   c3 --> c4["c4: add safety tags"]
+//   c2 --> c5["c5: feature/ingredients"]
+//   c5 --> c6["c6: ingredients table"]
+//   c2 --> c7["c7: merge safety + ingredients"]
+//   c4 --> c7
+//   c6 --> c7
+//   c7 --> c8["c8: docs: README"]
+// `;
+
+const mmd = `
+flowchart TD
+  c1["c1: init character base"]
+  c2["c2: add friendly tone"]
+  c3["c3: branch: humor-mode"]
+  c4["c4: refine humor responses"]
+  c5["c5: branch: strict-mode"]
+  c6["c6: enforce concise replies"]
+  c7["c7: merge humor + strict personality"]
+  c8["c8: add empathy layer"]
+  c9["c9: safety review + seal A"]
+
+  c1 --> c2
+  c2 --> c3
+  c3 --> c4
+  c2 --> c5
+  c5 --> c6
+  c2 --> c7
+  c4 --> c7
+  c6 --> c7
+  c7 --> c8
+  c8 --> c9
+`;
 
 export default function Character(){
   const { id } = useParams()
@@ -68,6 +108,17 @@ export default function Character(){
     const persona = 'Friendly mentor, guides users with empathy and expertise.';
     const prompt = 'You are a helpful AI character. Always provide clear, safe, and supportive answers.';
 
+    // Mock mermaid git graph
+    const mermaidGraph = `
+      gitGraph:
+        commit id: "a1b2c3d" tag: "v1" message: "Initial character json"
+        commit id: "e4f5g6h" message: "Add safety tags"
+        branch feature
+        commit id: "f7g8h9i" message: "Experiment persona"
+        checkout main
+        merge feature
+    `;
+
     return (
       <section className="max-w-5xl mx-auto space-y-8">
         {/* Tab Navigation */}
@@ -112,46 +163,9 @@ export default function Character(){
         {/* Tab Content */}
         {tab === 'git' && (
           <section>
-            <h2 className="font-semibold mb-4">Commit History</h2>
-            <div className="space-y-6">
-              {commits.map((commit, idx) => {
-                const prevIngredients = idx > 0 ? commits[idx-1].ingredients : [];
-                const diff = diffIngredients(commit.ingredients, prevIngredients);
-                return (
-                  <div key={commit.id} className="border rounded-2xl p-4 bg-white shadow-soft">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <SafetySeal level={commit.safety} tags={commit.harmful} />
-                        <span className="text-xs px-2 py-1 rounded bg-slate-100">Age: {commit.age}</span>
-                      </div>
-                      <div className="text-xs text-slate-500">{commit.when}</div>
-                    </div>
-                    <div className="font-semibold mb-1">{commit.message}</div>
-                    <div className="mb-2">
-                      <span className="font-medium text-sm">Ingredients Changed:</span>
-                      {diff.length > 0 ? (
-                        <IngredientTable rows={diff} />
-                      ) : (
-                        <div className="text-xs text-slate-400 mt-1">No ingredient changes</div>
-                      )}
-                    </div>
-                    <div className="mt-2">
-                      <span className="font-medium text-sm">Harmfulness Levels:</span>
-                      <div className="flex gap-2 mt-1 flex-wrap">
-                        {harmfulness.map(h => (
-                          <span
-                            key={h.key}
-                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${h.color} ${commit.harmful.includes(h.key) ? 'opacity-100' : 'opacity-40'}`}
-                          >
-                            {h.key}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="text-xs text-slate-400 mt-1">* Intuitive marks, like game certification badges</div>
-                    </div>
-                  </div>
-                );
-              })}
+            <h2 className="font-semibold mb-4">Git Graph</h2>
+            <div className="border rounded-2xl p-4 bg-white">
+              <Mermaid chart={mmd} />
             </div>
           </section>
         )}
