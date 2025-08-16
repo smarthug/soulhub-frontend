@@ -11,7 +11,7 @@ export default function Character(){
       <header className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl font-bold">{id}</h1>
-          <p className="text-slate-600 mt-1">설명 텍스트 — 캐릭터의 목적/성격/가이드</p>
+          <p className="text-slate-600 mt-1">Description text — character's purpose/personality/guide</p>
           <div className="mt-3"><SafetySeal level="B" tags={['language','violence']} /></div>
         </div>
         <div className="flex gap-2">
