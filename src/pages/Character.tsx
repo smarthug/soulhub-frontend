@@ -223,8 +223,16 @@ export default function Character(){
       return current.filter((ing: any) => !prevSet.has(serialize(ing)));
     };
 
-    // Tab state
-    const [tab, setTab] = React.useState('git');
+  // Tab state
+  const [tab, setTab] = React.useState('git');
+
+  // Branch state (mock)
+  const [branch, setBranch] = React.useState('main');
+  const [showBranchList, setShowBranchList] = React.useState(false);
+  // Extract all node labels from mmd string
+  const nodeLabelRegex = /([a-z]+\d+)\["([^"]+)"/g;
+  const foundNodes = Array.from(mmd.matchAll(nodeLabelRegex)).map(match => match[2]);
+  const branches = ['main', ...foundNodes];
 
     // Example data for other tabs
     const persona = 'Friendly mentor, guides users with empathy and expertise.';
@@ -276,7 +284,29 @@ export default function Character(){
             <p className="text-slate-600 mt-1">Description text — character's purpose/personality/guide</p>
             <div className="mt-3"><SafetySeal level="B" tags={['language','violence']} /></div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center relative">
+            {/* Branch Selector */}
+            <div className="relative">
+              <button
+                className="px-3 py-1 rounded-2xl border bg-white text-sm font-medium flex items-center gap-1 hover:bg-slate-50"
+                onClick={()=>setShowBranchList(v=>!v)}
+                aria-label="Select branch"
+              >
+                <span className="font-mono">{branch}</span>
+                <svg width="16" height="16" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              {showBranchList && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow z-10">
+                  {branches.map(b => (
+                    <button
+                      key={b}
+                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 ${b===branch ? 'font-bold text-brand-700' : ''}`}
+                      onClick={()=>{ setBranch(b); setShowBranchList(false); }}
+                    >{b}</button>
+                  ))}
+                </div>
+              )}
+            </div>
             <Button>Fork</Button>
             <Button variant="ghost">Run API Demo</Button>
           </div>
