@@ -1,12 +1,22 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
-import { SafetySeal } from '@/components/ai/SafetySeal'
-import { IngredientTable } from '@/components/ai/IngredientTable'
-import { CommitTimeline } from '@/components/ai/CommitTimeline'
-import { Button } from '@/components/common/Button'
-import  Mermaid  from '@/components/common/Mermaid'
+import React from "react";
+import { Link, useParams } from "react-router-dom";
+import { SafetySeal } from "@/components/ai/SafetySeal";
+import { IngredientTable } from "@/components/ai/IngredientTable";
+import { CommitTimeline } from "@/components/ai/CommitTimeline";
+import { Button } from "@/components/common/Button";
+import Mermaid from "@/components/common/Mermaid";
 
+// import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
+// import { WalrusClient } from '@mysten/walrus';
 
+// const suiClient = new SuiClient({
+// 	url: getFullnodeUrl('testnet'),
+// });
+
+// const walrusClient = new WalrusClient({
+// 	network: 'testnet',
+// 	suiClient,
+// });
 
 // const mmd = `
 // flowchart LR
@@ -127,7 +137,6 @@ import  Mermaid  from '@/components/common/Mermaid'
 //   c15 --> c16
 // `;
 
-
 const mmd = `
 flowchart TD
   %% Styles
@@ -167,79 +176,91 @@ flowchart TD
   %% No single merge point – branches evolve separately
 `;
 
-export default function Character(){
-  const { id } = useParams()
+export default function Character() {
+  const { id } = useParams();
   // Harmfulness categories
 
-    // Harmfulness categories
-    const harmfulness = [
-      { key: 'Horror', color: 'bg-purple-200' },
-      { key: 'Violence', color: 'bg-red-200' },
-      { key: 'Sexuality', color: 'bg-pink-200' },
-      { key: 'Inappropriate Language', color: 'bg-yellow-200' },
-      { key: 'Drugs', color: 'bg-green-200' },
-      { key: 'Crime', color: 'bg-gray-200' },
-      { key: 'Gambling', color: 'bg-blue-200' },
-    ];
+  // Harmfulness categories
+  const harmfulness = [
+    { key: "Horror", color: "bg-purple-200" },
+    { key: "Violence", color: "bg-red-200" },
+    { key: "Sexuality", color: "bg-pink-200" },
+    { key: "Inappropriate Language", color: "bg-yellow-200" },
+    { key: "Drugs", color: "bg-green-200" },
+    { key: "Crime", color: "bg-gray-200" },
+    { key: "Gambling", color: "bg-blue-200" },
+  ];
 
-    // Example commit data with age rating and harmfulness
-    const commits = [
-      {
-        id: 'a1b2c3d',
-        message: 'Initial character json',
-        when: '2025-08-14',
-        safety: 'B' as 'A'|'B'|'C'|'D',
-        age: '12+',
-        ingredients: [
-          {type:'dataset' as 'dataset', source:'OpenDialog v1', license:'CC-BY-4.0'},
-          {type:'model' as 'model', source:'LLM-X 8B', license:'Apache-2.0'},
-          {type:'prompt' as 'prompt', source:'system: role-playing guide'}
-        ],
-        harmful: ['Violence', 'Inappropriate Language']
-      },
-      {
-        id: 'e4f5g6h',
-        message: 'Add safety tags',
-        when: '2025-08-15',
-        safety: 'A' as 'A'|'B'|'C'|'D',
-        age: 'All',
-        ingredients: [
-          {type:'dataset' as 'dataset', source:'OpenDialog v2', license:'CC-BY-4.0'},
-          {type:'model' as 'model', source:'LLM-X 8B', license:'Apache-2.0'},
-          {type:'prompt' as 'prompt', source:'system: role-playing guide'}
-        ],
-        harmful: []
-      }
-    ];
+  // Example commit data with age rating and harmfulness
+  const commits = [
+    {
+      id: "a1b2c3d",
+      message: "Initial character json",
+      when: "2025-08-14",
+      safety: "B" as "A" | "B" | "C" | "D",
+      age: "12+",
+      ingredients: [
+        {
+          type: "dataset" as "dataset",
+          source: "OpenDialog v1",
+          license: "CC-BY-4.0",
+        },
+        { type: "model" as "model", source: "LLM-X 8B", license: "Apache-2.0" },
+        { type: "prompt" as "prompt", source: "system: role-playing guide" },
+      ],
+      harmful: ["Violence", "Inappropriate Language"],
+    },
+    {
+      id: "e4f5g6h",
+      message: "Add safety tags",
+      when: "2025-08-15",
+      safety: "A" as "A" | "B" | "C" | "D",
+      age: "All",
+      ingredients: [
+        {
+          type: "dataset" as "dataset",
+          source: "OpenDialog v2",
+          license: "CC-BY-4.0",
+        },
+        { type: "model" as "model", source: "LLM-X 8B", license: "Apache-2.0" },
+        { type: "prompt" as "prompt", source: "system: role-playing guide" },
+      ],
+      harmful: [],
+    },
+  ];
 
-    /**
-     * Returns ingredients in current that are not in prev
-     * @param {Array} current
-     * @param {Array} prev
-     */
-    const diffIngredients = (current: any[], prev: any[]) => {
-      const serialize = (ing: any) => `${ing.type}|${ing.source}|${ing.license ?? ''}`;
-      const prevSet = new Set(prev.map(serialize));
-      return current.filter((ing: any) => !prevSet.has(serialize(ing)));
-    };
+  /**
+   * Returns ingredients in current that are not in prev
+   * @param {Array} current
+   * @param {Array} prev
+   */
+  const diffIngredients = (current: any[], prev: any[]) => {
+    const serialize = (ing: any) =>
+      `${ing.type}|${ing.source}|${ing.license ?? ""}`;
+    const prevSet = new Set(prev.map(serialize));
+    return current.filter((ing: any) => !prevSet.has(serialize(ing)));
+  };
 
   // Tab state
-  const [tab, setTab] = React.useState('git');
+  const [tab, setTab] = React.useState("git");
 
   // Branch state (mock)
-  const [branch, setBranch] = React.useState('main');
+  const [branch, setBranch] = React.useState("main");
   const [showBranchList, setShowBranchList] = React.useState(false);
   // Extract all node labels from mmd string
   const nodeLabelRegex = /([a-z]+\d+)\["([^"]+)"/g;
-  const foundNodes = Array.from(mmd.matchAll(nodeLabelRegex)).map(match => match[2]);
-  const branches = ['main', ...foundNodes];
+  const foundNodes = Array.from(mmd.matchAll(nodeLabelRegex)).map(
+    (match) => match[2]
+  );
+  const branches = ["main", ...foundNodes];
 
-    // Example data for other tabs
-    const persona = 'Friendly mentor, guides users with empathy and expertise.';
-    const prompt = 'You are a helpful AI character. Always provide clear, safe, and supportive answers.';
+  // Example data for other tabs
+  const persona = "Friendly mentor, guides users with empathy and expertise.";
+  const prompt =
+    "You are a helpful AI character. Always provide clear, safe, and supportive answers.";
 
-    // Mock mermaid git graph
-    const mermaidGraph = `
+  // Mock mermaid git graph
+  const mermaidGraph = `
       gitGraph:
         commit id: "a1b2c3d" tag: "v1" message: "Initial character json"
         commit id: "e4f5g6h" message: "Add safety tags"
@@ -249,122 +270,198 @@ export default function Character(){
         merge feature
     `;
 
-    return (
-      <section className="max-w-5xl mx-auto space-y-8">
-        {/* Tab Navigation */}
-        <div className="border-b mb-6">
-          <nav className="flex gap-2">
-            <button
-              className={`px-4 py-2 font-medium rounded-t-md ${tab==='git' ? 'bg-white border-x border-t border-b-0' : 'bg-slate-100'}`}
-              onClick={()=>setTab('git')}
-            >Git Graph</button>
-            <button
-              className={`px-4 py-2 font-medium rounded-t-md ${tab==='ingredients' ? 'bg-white border-x border-t border-b-0' : 'bg-slate-100'}`}
-              onClick={()=>setTab('ingredients')}
-            >Ingredients</button>
-            <button
-              className={`px-4 py-2 font-medium rounded-t-md ${tab==='prompt' ? 'bg-white border-x border-t border-b-0' : 'bg-slate-100'}`}
-              onClick={()=>setTab('prompt')}
-            >Prompting</button>
-            <button
-              className={`px-4 py-2 font-medium rounded-t-md ${tab==='personality' ? 'bg-white border-x border-t border-b-0' : 'bg-slate-100'}`}
-              onClick={()=>setTab('personality')}
-            >Personality</button>
-            <button
-              className={`px-4 py-2 font-medium rounded-t-md ${tab==='harm' ? 'bg-white border-x border-t border-b-0' : 'bg-slate-100'}`}
-              onClick={()=>setTab('harm')}
-            >Harmfulness Levels</button>
-          </nav>
+  return (
+    <section className="max-w-5xl mx-auto space-y-8">
+      {/* Tab Navigation */}
+      <div className="border-b mb-6">
+        <nav className="flex gap-2">
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "git"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("git")}
+          >
+            Git Graph
+          </button>
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "ingredients"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("ingredients")}
+          >
+            Ingredients
+          </button>
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "prompt"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("prompt")}
+          >
+            Prompting
+          </button>
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "personality"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("personality")}
+          >
+            Personality
+          </button>
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "harm"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("harm")}
+          >
+            Harmfulness Levels
+          </button>
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "used"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("used")}
+          >
+            Used By
+          </button>
+        </nav>
+      </div>
+
+      {/* Character Header */}
+      <header className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">{id}</h1>
+          <p className="text-slate-600 mt-1">
+            Description text — character's purpose/personality/guide
+          </p>
+          <div className="mt-3">
+            <SafetySeal level="B" tags={["language", "violence"]} />
+          </div>
         </div>
-
-        {/* Character Header */}
-        <header className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">{id}</h1>
-            <p className="text-slate-600 mt-1">Description text — character's purpose/personality/guide</p>
-            <div className="mt-3"><SafetySeal level="B" tags={['language','violence']} /></div>
-          </div>
-          <div className="flex gap-2 items-center relative">
-            {/* Branch Selector */}
-            <div className="relative">
-              <button
-                className="px-3 py-1 rounded-2xl border bg-white text-sm font-medium flex items-center gap-1 hover:bg-slate-50"
-                onClick={()=>setShowBranchList(v=>!v)}
-                aria-label="Select branch"
-              >
-                <span className="font-mono">{branch}</span>
-                <svg width="16" height="16" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-              {showBranchList && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow z-10">
-                  {branches.map(b => (
-                    <button
-                      key={b}
-                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 ${b===branch ? 'font-bold text-brand-700' : ''}`}
-                      onClick={()=>{ setBranch(b); setShowBranchList(false); }}
-                    >{b}</button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <Button>Fork</Button>
-            <Button variant="ghost">Run API Demo</Button>
-          </div>
-        </header>
-
-        {/* Tab Content */}
-        {tab === 'git' && (
-          <section>
-            <h2 className="font-semibold mb-4">Git Graph</h2>
-            <div className="border rounded-2xl p-4 bg-white">
-              <Mermaid chart={mmd} />
-            </div>
-          </section>
-        )}
-
-        {tab === 'ingredients' && (
-          <section>
-            <h2 className="font-semibold mb-4">Ingredients</h2>
-            <IngredientTable rows={commits[commits.length-1].ingredients} />
-          </section>
-        )}
-
-        {tab === 'prompt' && (
-          <section>
-            <h2 className="font-semibold mb-4">Prompting</h2>
-            <div className="border rounded-2xl p-4 bg-white text-slate-700 text-sm">
-              {prompt}
-            </div>
-          </section>
-        )}
-
-        {tab === 'personality' && (
-          <section>
-            <h2 className="font-semibold mb-4">Personality</h2>
-            <div className="border rounded-2xl p-4 bg-white text-slate-700 text-sm">
-              {persona}
-            </div>
-          </section>
-        )}
-
-        {tab === 'harm' && (
-          <section>
-            <h2 className="font-semibold mb-4">Harmfulness Levels</h2>
-            <div className="border rounded-2xl p-4 bg-white">
-              <div className="flex gap-2 flex-wrap">
-                {harmfulness.map(h => (
-                  <span
-                    key={h.key}
-                    className={`inline-flex items-center px-3 py-2 rounded text-sm font-medium ${h.color}`}
+        <div className="flex gap-2 items-center relative">
+          {/* Branch Selector */}
+          <div className="relative">
+            <button
+              className="px-3 py-1 rounded-2xl border bg-white text-sm font-medium flex items-center gap-1 hover:bg-slate-50"
+              onClick={() => setShowBranchList((v) => !v)}
+              aria-label="Select branch"
+            >
+              <span className="font-mono">{branch}</span>
+              <svg width="16" height="16" fill="none" viewBox="0 0 20 20">
+                <path
+                  d="M6 8l4 4 4-4"
+                  stroke="#555"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            {showBranchList && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow z-10">
+                {branches.map((b) => (
+                  <button
+                    key={b}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-slate-100 ${
+                      b === branch ? "font-bold text-brand-700" : ""
+                    }`}
+                    onClick={() => {
+                      setBranch(b);
+                      setShowBranchList(false);
+                    }}
                   >
-                    {h.key}
-                  </span>
+                    {b}
+                  </button>
                 ))}
               </div>
-              <div className="text-xs text-slate-400 mt-2">* These levels are used for intuitive safety marking.</div>
+            )}
+          </div>
+          <Link
+            to={`/commit/${id}`}
+            className="text-sm text-brand-600 hover:underline"
+          >
+            <Button>Fork</Button>
+          </Link>
+          <Button variant="ghost">Run API Demo</Button>
+        </div>
+      </header>
+
+      {/* Tab Content */}
+      {tab === "git" && (
+        <section>
+          <h2 className="font-semibold mb-4">Git Graph</h2>
+          <div className="border rounded-2xl p-4 bg-white">
+            <Mermaid chart={mmd} />
+          </div>
+        </section>
+      )}
+
+      {tab === "ingredients" && (
+        <section>
+          <h2 className="font-semibold mb-4">Ingredients</h2>
+          <IngredientTable rows={commits[commits.length - 1].ingredients} />
+        </section>
+      )}
+
+      {tab === "prompt" && (
+        <section>
+          <h2 className="font-semibold mb-4">Prompting</h2>
+          <div className="border rounded-2xl p-4 bg-white text-slate-700 text-sm">
+            {prompt}
+          </div>
+          <div className="flex justify-end mt-6">
+            <Button
+              onClick={async () => {
+                console.log("clicked");
+              }}
+              variant="primary"
+            >
+              Commit
+            </Button>
+          </div>
+        </section>
+      )}
+
+      {tab === "personality" && (
+        <section>
+          <h2 className="font-semibold mb-4">Personality</h2>
+          <div className="border rounded-2xl p-4 bg-white text-slate-700 text-sm">
+            {persona}
+          </div>
+        </section>
+      )}
+
+      {tab === "harm" && (
+        <section>
+          <h2 className="font-semibold mb-4">Harmfulness Levels</h2>
+          <div className="border rounded-2xl p-4 bg-white">
+            <div className="flex gap-2 flex-wrap">
+              {harmfulness.map((h) => (
+                <span
+                  key={h.key}
+                  className={`inline-flex items-center px-3 py-2 rounded text-sm font-medium ${h.color}`}
+                >
+                  {h.key}
+                </span>
+              ))}
             </div>
-          </section>
-        )}
-      </section>
-    );
+            <div className="text-xs text-slate-400 mt-2">
+              * These levels are used for intuitive safety marking.
+            </div>
+          </div>
+        </section>
+      )}
+    </section>
+  );
 }
