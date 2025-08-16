@@ -1,7 +1,7 @@
 {
     "name": "Johannes Chrysostomus Wolfgang Gottlieb Mozart",
     "nicknames": {
-        "public": ["Wolfgang Amadeus Mozart"],
+        "public": ["Mozart"],
         "alias": [{"name":"Amadeus", "to_whom": "private letters"}]
     },
     "universe": "default",
