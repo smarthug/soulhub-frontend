@@ -12,10 +12,14 @@ import {
 // import { ConnectButton } from "@mysten/dapp-kit";
 import { Tusky } from "@tusky-io/ts-sdk/web";
 
+import Mozzart from "@/mock/mozart_28years.json";
+console.log(Mozzart);
+
 function App() {
   const [tusky, setTusky] = useState<Tusky | null>();
   const [logs, setLogs] = useState<string[]>([]);
   const logsEndRef = useRef<HTMLDivElement>(null);
+  const [jsonText, setJsonText] = useState<string>(JSON.stringify(Mozzart, null, 2));
 
   const { mutate: signPersonalMessage } = useSignPersonalMessage();
   const account = useCurrentAccount();
@@ -132,8 +136,14 @@ function App() {
     //   throw new Error("Failed uploading the file");
     // }
 
-    // JSON 객체를 문자열로 직렬화
-    const jsonObj = { hello: "world", ts: Date.now() };
+    // JSON: parse edited text first
+    let jsonObj: any;
+    try {
+      jsonObj = JSON.parse(jsonText);
+    } catch (e) {
+      addLog('Invalid JSON: ' + (e as Error).message);
+      return;
+    }
     const jsonStr = JSON.stringify(jsonObj);
 
     // File 객체로 변환
@@ -174,70 +184,66 @@ function App() {
   };
 
   return (
-    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-4">
-      <div
-        className="card shadow-sm p-4"
-        style={{ maxWidth: "400px", width: "100%" }}
-      >
-        <div className="text-center mb-4">
-          <h1 className="h4 mb-3">Tusky SDK Demo</h1>
-          <ConnectButton className="mb-3" />
-        </div>
-
-        {!tusky ? (
-          <div className="d-grid gap-2">
-            <button
-              className="btn btn-primary"
-              onClick={handleSignInWithWallet}
-            >
-              Sign in with Wallet
-            </button>
-          </div>
-        ) : (
-          <div className="d-grid gap-3">
-            <div className="text-center">
-              {/* <input
-                type="file"
-                className="form-control"
-                onChange={(e) => handleUpload(e.target.files)}
-              /> */}
-              <button
-                className="btn btn-outline-success"
-                onClick={handleUpload}
-              >
-                Upload File
-              </button>
+    <div className="App container py-4">
+      <div className="row">
+        <div className="col-md-6 mb-4">
+          <div className="card shadow-sm h-100">
+            <div className="card-header bg-light">
+              <h6 className="mb-0">Edit JSON</h6>
             </div>
-            <button className="btn btn-outline-danger" onClick={handleSignOut}>
-              Sign out
-            </button>
+            <div className="card-body p-2">
+              <textarea
+                className="form-control"
+                style={{ fontFamily: 'monospace', minHeight: '300px' }}
+                value={jsonText}
+                onChange={e => setJsonText(e.target.value)}
+                spellCheck={false}
+              />
+            </div>
           </div>
-        )}
-      </div>
-
-      <div
-        className="card shadow-sm mt-4"
-        style={{ maxWidth: "400px", width: "100%" }}
-      >
-        <div className="card-header bg-light">
-          <h6 className="mb-0">SDK Method Calls</h6>
         </div>
-        <div className="card-body p-2">
-          <div
-            className="logs-container"
-            style={{ maxHeight: "200px", overflowY: "auto" }}
-          >
-            {logs.map((log, index) => (
-              <div
-                key={index}
-                className={`log-entry small ${
-                  log.startsWith("  →") ? "text-primary" : "text-muted"
-                }`}
-              >
-                {log}
+
+        <div className="col-md-6 d-flex flex-column">
+          <div className="card shadow-sm p-4 mb-4" style={{ width: '100%' }}>
+            <div className="text-center mb-4">
+              <h1 className="h4 mb-3">Tusky SDK Demo</h1>
+              <ConnectButton className="mb-3" />
+            </div>
+
+            {!tusky ? (
+              <div className="d-grid gap-2">
+                <button className="btn btn-primary" onClick={handleSignInWithWallet}>
+                  Sign in with Wallet
+                </button>
               </div>
-            ))}
-            <div ref={logsEndRef} />
+            ) : (
+              <div className="d-grid gap-3">
+                <div className="text-center">
+                  <button className="btn btn-outline-success" onClick={handleUpload}>
+                    Upload File
+                  </button>
+                </div>
+                <button className="btn btn-outline-danger" onClick={handleSignOut}>
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="card shadow-sm" style={{ width: '100%' }}>
+            <div className="card-header bg-light">
+              <h6 className="mb-0">SDK Method Calls</h6>
+            </div>
+            <div className="card-body p-2">
+              <div className="logs-container" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {logs.map((log, index) => (
+                  <div key={index} className={`log-entry small ${log.startsWith('  →') ? 'text-primary' : 'text-muted'}`}>
+                    {log}
+                  </div>
+                ))}
+                <div ref={logsEndRef} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
