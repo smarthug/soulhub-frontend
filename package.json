@@ -17,6 +17,7 @@
     "@tusky-io/ts-sdk": "^0.36.0",
     "bootstrap": "^5.3.7",
     "class-variance-authority": "^0.7.0",
+    "json-edit-react": "^1.28.2",
     "lucide-react": "^0.462.0",
     "mermaid": "^11.9.0",
     "monaco-editor": "^0.52.0",
