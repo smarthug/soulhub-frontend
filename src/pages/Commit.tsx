@@ -1,8 +1,15 @@
-export default function Commit(){
+import WalrusUpload from "@/components/walrus/upload";
+import { ConnectButton } from "@mysten/dapp-kit";
+
+export default function Commit() {
   return (
     <section className="max-w-4xl mx-auto">
-  <h1 className="text-2xl font-bold">Commit</h1>
-  <p className="text-slate-600 mt-2">Displays metadata, diff, and action buttons for a specific commit.</p>
+      <h1 className="text-2xl font-bold">Commit</h1>
+      <p className="text-slate-600 mt-2">
+        Displays metadata, diff, and action buttons for a specific commit.
+      </p>
+      {/* <ConnectButton /> */}
+      <WalrusUpload />
     </section>
-  )
+  );
 }
