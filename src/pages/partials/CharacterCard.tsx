@@ -13,7 +13,7 @@ export default function CharacterCard({id, imageSrc}:{id:string, imageSrc?: stri
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-semibold">{id}</h3>
-          <p className="text-xs text-slate-500">short description...</p>
+          <p className="text-xs text-slate-500"></p>
         </div>
         <SafetySeal level="B" />
       </div>

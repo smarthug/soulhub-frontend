@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/common/Button'
 import CharacterCard from './partials/CharacterCard'
+import Ein from '@/mock/einstein_28years.json'
+import Mozz from '@/mock/mozart_28years.json'
+
+const characters = [Ein, Mozz]
 
 export default function Home(){
   return (
@@ -16,7 +20,9 @@ export default function Home(){
 
       <h2 className="mt-10 mb-4 text-xl font-semibold">Recent Characters</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({length:6}).map((_,i)=> <CharacterCard key={i} id={`char-${i+1}`} />)}
+        {characters.map((c, i) => (
+          <CharacterCard key={c.name} id={c.name} imageSrc={`/images/characters/char-${i+1}.jpg`} />
+        ))}
       </div>
     </section>
   )
