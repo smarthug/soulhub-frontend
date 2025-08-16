@@ -274,6 +274,10 @@ export default function Character(){
               className={`px-4 py-2 font-medium rounded-t-md ${tab==='harm' ? 'bg-white border-x border-t border-b-0' : 'bg-slate-100'}`}
               onClick={()=>setTab('harm')}
             >Harmfulness Levels</button>
+            <button
+              className={`px-4 py-2 font-medium rounded-t-md ${tab==='used' ? 'bg-white border-x border-t border-b-0' : 'bg-slate-100'}`}
+              onClick={()=>setTab('used')}
+            >Used By</button>
           </nav>
         </div>
 
