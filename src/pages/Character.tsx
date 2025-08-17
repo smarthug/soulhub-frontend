@@ -619,11 +619,11 @@ export default function Character() {
           <div className="border rounded-2xl p-4 bg-white">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
               <div className="md:col-span-1">
-                <div className="rounded-lg overflow-hidden shadow-lg">
+                <div className="rounded-lg shadow-lg">
                   <img
                     src="/images/mascot/givememoney.jpeg"
                     alt="Give me money"
-                    className="w-full h-[40rem] md:h-[48rem] object-cover"
+                    className="w-full  object-cover"
                     onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/favicon.svg' }}
                   />
                 </div>
@@ -642,7 +642,7 @@ export default function Character() {
                 </div>
 
                 <div className="mt-4 flex items-center gap-3">
-                  <button className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700">Donate with Card</button>
+                  <button className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700">Donate with Stable Coin</button>
                   <button className="px-4 py-2 border rounded-md">Share</button>
                   <div className="text-sm text-slate-500 ml-auto">Your contribution is tax-deductible where applicable.</div>
                 </div>
