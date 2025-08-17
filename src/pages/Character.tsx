@@ -5,10 +5,16 @@ import { IngredientTable } from "@/components/ai/IngredientTable";
 import { CommitTimeline } from "@/components/ai/CommitTimeline";
 import { Button } from "@/components/common/Button";
 import Mermaid from "@/components/common/Mermaid";
-import { useAccount, useWalletClient, useSwitchChain } from 'wagmi'
-import { abi, CONTRACT_ADDRESS } from '@/lib/erc1155'
+import { useAccount, useWalletClient, useSwitchChain, useConnectorClient } from "wagmi";
+import { abi, CONTRACT_ADDRESS } from "@/lib/erc1155";
 
-import { createPublicClient, createWalletClient, custom, encodeFunctionData, http } from 'viem'
+import {
+  createPublicClient,
+  createWalletClient,
+  custom,
+  encodeFunctionData,
+  http,
+} from "viem";
 import { flowTestnet } from "viem/chains";
 
 // import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
@@ -409,9 +415,17 @@ export default function Character() {
         <div className="border rounded-2xl p-4 bg-white">
           <div className="flex gap-3 items-center">
             <label className="text-sm">Token ID</label>
-            <input id="tokenId" defaultValue={1} className="border rounded px-2 py-1 w-24" />
+            <input
+              id="tokenId"
+              defaultValue={1}
+              className="border rounded px-2 py-1 w-24"
+            />
             <label className="text-sm">Amount</label>
-            <input id="amount" defaultValue={1} className="border rounded px-2 py-1 w-24" />
+            <input
+              id="amount"
+              defaultValue={1}
+              className="border rounded px-2 py-1 w-24"
+            />
             <MintButton />
           </div>
         </div>
@@ -485,101 +499,161 @@ export default function Character() {
 }
 
 function MintButton() {
-  const { address } = useAccount()
+  const { address } = useAccount();
 
-      const publicClient = createPublicClient({
+
+
+  const { data: walletClient } = useWalletClient();
+  const { switchChain } = useSwitchChain?.() as any;
+
+  const [isMinting, setIsMinting] = React.useState(false);
+  const [txHash, setTxHash] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const desiredChainId = 1; // mainnet
+
+  // const handleMint = async () => {
+  //   const tokenIdEl = document.getElementById('tokenId') as HTMLInputElement
+  //   const amountEl = document.getElementById('amount') as HTMLInputElement
+  //   const id = Number(tokenIdEl.value || 1)
+  //   const amt = Number(amountEl.value || 1)
+
+  //   try {
+  //     setError(null)
+  //     setTxHash(null)
+
+  //     if (!address) {
+  //       setError('Please connect your wallet first')
+  //       return
+  //     }
+  //     if (!walletClient) {
+  //       setError('Wallet client not ready')
+  //       return
+  //     }
+
+  //     const currentChainId = Number((window as any)?.ethereum?.chainId ?? 0)
+
+  //     setIsMinting(true)
+
+  //     // simulate via publicClient to obtain a request object for writeContract
+  //     let request: any
+  //     try {
+  //       const sim = await (publicClient as any).simulateContract({
+  //         account: address as `0x${string}`,
+  //         address: CONTRACT_ADDRESS as `0x${string}`,
+  //         abi: abi as any,
+  //         functionName: 'mint',
+  //         args: [address as `0x${string}`, BigInt(id), BigInt(amt), '0x'],
+  //       })
+  //       request = (sim as any).request ?? sim
+  //     } catch (simErr) {
+  //       setIsMinting(false)
+  //       console.error('simulation failed', simErr)
+  //       setError('Simulation failed: ' + ((simErr as any)?.message ?? String(simErr)))
+  //       return
+  //     }
+
+  //     // send transaction using the wallet client with the prepared request
+  //     let tx: `0x${string}`
+  //     try {
+  //       tx = await (walletClient as any).writeContract(request)
+  //       setTxHash(String(tx))
+  //       // attempt to fetch receipt (may be null until mined)
+  //       try {
+  //         const receipt = await (publicClient as any).getTransactionReceipt({ hash: tx })
+  //         console.log('Transaction receipt:', receipt)
+  //       } catch (rcptErr) {
+  //         console.warn('Could not fetch receipt immediately:', rcptErr)
+  //       }
+  //     } catch (sendErr) {
+  //       console.error('Failed to send transaction:', sendErr)
+  //       setError('Failed to send transaction: ' + ((sendErr as any)?.message ?? String(sendErr)))
+  //     } finally {
+  //       setIsMinting(false)
+  //     }
+  //   } catch (e) {
+  //     console.error('mint error', e)
+  //     setError((e as any)?.message ?? String(e))
+  //     setIsMinting(false)
+  //   }
+  // }
+
+  const handleMint = async () => {
+    const publicClient = createPublicClient({
       chain: flowTestnet,
       transport: http()
     })
+    // const walletClient = createWalletClient({
+    //   chain: flowTestnet,
+    //   transport: custom()
+    // })
 
-  const { data: walletClient } = useWalletClient()
-  const { switchChain } = useSwitchChain?.() as any
+    const erc1155Address =  CONTRACT_ADDRESS as `0x${string}`;
+    console.log('ERC1155 address:', erc1155Address);
 
-  const [isMinting, setIsMinting] = React.useState(false)
-  const [txHash, setTxHash] = React.useState<string | null>(null)
-  const [error, setError] = React.useState<string | null>(null)
-
-  const desiredChainId = 1 // mainnet
-
-  const handleMint = async () => {
-    const tokenIdEl = document.getElementById('tokenId') as HTMLInputElement
-    const amountEl = document.getElementById('amount') as HTMLInputElement
-    const id = Number(tokenIdEl.value || 1)
-    const amt = Number(amountEl.value || 1)
-
-    try {
-      setError(null)
-      setTxHash(null)
-
-      if (!address) {
-        setError('Please connect your wallet first')
-        return
-      }
-      if (!walletClient) {
-        setError('Wallet client not ready')
-        return
-      }
-
-      const currentChainId = Number((window as any)?.ethereum?.chainId ?? 0)
-   
-
-      setIsMinting(true)
-
-      // simulate via publicClient to obtain a request object for writeContract
-      let request: any
-      try {
-        const sim = await (publicClient as any).simulateContract({
-          account: address as `0x${string}`,
-          address: CONTRACT_ADDRESS as `0x${string}`,
-          abi: abi as any,
-          functionName: 'mint',
-          args: [address as `0x${string}`, BigInt(id), BigInt(amt), '0x'],
-        })
-        request = (sim as any).request ?? sim
-      } catch (simErr) {
-        setIsMinting(false)
-        console.error('simulation failed', simErr)
-        setError('Simulation failed: ' + ((simErr as any)?.message ?? String(simErr)))
-        return
-      }
-
-      // send transaction using the wallet client with the prepared request
-      let tx: `0x${string}`
-      try {
-        tx = await (walletClient as any).writeContract(request)
-        setTxHash(String(tx))
-        // attempt to fetch receipt (may be null until mined)
-        try {
-          const receipt = await (publicClient as any).getTransactionReceipt({ hash: tx })
-          console.log('Transaction receipt:', receipt)
-        } catch (rcptErr) {
-          console.warn('Could not fetch receipt immediately:', rcptErr)
+    const abi = [{
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
         }
-      } catch (sendErr) {
-        console.error('Failed to send transaction:', sendErr)
-        setError('Failed to send transaction: ' + ((sendErr as any)?.message ?? String(sendErr)))
-      } finally {
-        setIsMinting(false)
-      }
-    } catch (e) {
-      console.error('mint error', e)
-      setError((e as any)?.message ?? String(e))
-      setIsMinting(false)
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }]
+
+    const [account] = await walletClient.getAddresses()
+    const { request } = await publicClient.simulateContract({
+      account,
+      address: erc1155Address,
+      abi: abi,
+      functionName: 'mint',
+      args: ['0xfa6Cc5134a2e81a2F19113992Ef61F9BE81cafdE', 0, 1, ""]
+    })
+
+
+    let tx: `0x${string}`;
+    try {
+      tx = await walletClient.writeContract(request)
+      console.log('Transaction hash:', tx);
+      // handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
+      const receipt = await publicClient.getTransactionReceipt({ hash: tx });
+      console.log('Transaction receipt:', receipt);
+    } catch (error: any) {
+      console.error('Failed to send transaction:', error);
     }
-  }
+  };
 
   return (
     <div className="flex items-center gap-3">
       <button
         id="mintBtn"
-        className={`ml-auto px-4 py-2 rounded text-white ${isMinting ? 'bg-slate-400' : 'bg-brand-600 hover:bg-brand-700'}`}
+        className={`ml-auto px-4 py-2 rounded text-white ${
+          isMinting ? "bg-slate-400" : "bg-brand-600 hover:bg-brand-700"
+        }`}
         onClick={handleMint}
         disabled={isMinting}
       >
-        {isMinting ? 'Minting…' : 'Mint'}
+        {isMinting ? "Minting…" : "Mint"}
       </button>
-
-   
 
       {/* Status / link */}
       <div className="text-sm">
@@ -587,7 +661,10 @@ function MintButton() {
           <div>
             <a
               className="text-brand-600 underline"
-              href={getExplorerTxUrl(Number((window as any)?.ethereum?.chainId ?? desiredChainId), txHash)}
+              href={getExplorerTxUrl(
+                Number((window as any)?.ethereum?.chainId ?? desiredChainId),
+                txHash
+              )}
               target="_blank"
               rel="noreferrer"
             >
@@ -598,16 +675,130 @@ function MintButton() {
         {error && <div className="text-red-600">{error}</div>}
       </div>
     </div>
-  )
+  );
 }
+
+// function MintButton2() {
+//   const { address } = useAccount()
+
+//       const publicClient = createPublicClient({
+//       chain: flowTestnet,
+//       transport: http()
+//     })
+
+//   const { data: walletClient } = useWalletClient()
+//   const { switchChain } = useSwitchChain?.() as any
+
+//   const [isMinting, setIsMinting] = React.useState(false)
+//   const [txHash, setTxHash] = React.useState<string | null>(null)
+//   const [error, setError] = React.useState<string | null>(null)
+
+//   const desiredChainId = 1 // mainnet
+
+//   const handleMint = async () => {
+//     const tokenIdEl = document.getElementById('tokenId') as HTMLInputElement
+//     const amountEl = document.getElementById('amount') as HTMLInputElement
+//     const id = Number(tokenIdEl.value || 1)
+//     const amt = Number(amountEl.value || 1)
+
+//     try {
+//       setError(null)
+//       setTxHash(null)
+
+//       if (!address) {
+//         setError('Please connect your wallet first')
+//         return
+//       }
+//       if (!walletClient) {
+//         setError('Wallet client not ready')
+//         return
+//       }
+
+//       const currentChainId = Number((window as any)?.ethereum?.chainId ?? 0)
+
+//       setIsMinting(true)
+
+//       // simulate via publicClient to obtain a request object for writeContract
+//       let request: any
+//       try {
+//         const sim = await (publicClient as any).simulateContract({
+//           account: address as `0x${string}`,
+//           address: CONTRACT_ADDRESS as `0x${string}`,
+//           abi: abi as any,
+//           functionName: 'mint',
+//           args: [address as `0x${string}`, BigInt(id), BigInt(amt), '0x'],
+//         })
+//         request = (sim as any).request ?? sim
+//       } catch (simErr) {
+//         setIsMinting(false)
+//         console.error('simulation failed', simErr)
+//         setError('Simulation failed: ' + ((simErr as any)?.message ?? String(simErr)))
+//         return
+//       }
+
+//       // send transaction using the wallet client with the prepared request
+//       let tx: `0x${string}`
+//       try {
+//         tx = await (walletClient as any).writeContract(request)
+//         setTxHash(String(tx))
+//         // attempt to fetch receipt (may be null until mined)
+//         try {
+//           const receipt = await (publicClient as any).getTransactionReceipt({ hash: tx })
+//           console.log('Transaction receipt:', receipt)
+//         } catch (rcptErr) {
+//           console.warn('Could not fetch receipt immediately:', rcptErr)
+//         }
+//       } catch (sendErr) {
+//         console.error('Failed to send transaction:', sendErr)
+//         setError('Failed to send transaction: ' + ((sendErr as any)?.message ?? String(sendErr)))
+//       } finally {
+//         setIsMinting(false)
+//       }
+//     } catch (e) {
+//       console.error('mint error', e)
+//       setError((e as any)?.message ?? String(e))
+//       setIsMinting(false)
+//     }
+//   }
+
+//   return (
+//     <div className="flex items-center gap-3">
+//       <button
+//         id="mintBtn"
+//         className={`ml-auto px-4 py-2 rounded text-white ${isMinting ? 'bg-slate-400' : 'bg-brand-600 hover:bg-brand-700'}`}
+//         onClick={handleMint}
+//         disabled={isMinting}
+//       >
+//         {isMinting ? 'Minting…' : 'Mint'}
+//       </button>
+
+//       {/* Status / link */}
+//       <div className="text-sm">
+//         {txHash && (
+//           <div>
+//             <a
+//               className="text-brand-600 underline"
+//               href={getExplorerTxUrl(Number((window as any)?.ethereum?.chainId ?? desiredChainId), txHash)}
+//               target="_blank"
+//               rel="noreferrer"
+//             >
+//               View tx
+//             </a>
+//           </div>
+//         )}
+//         {error && <div className="text-red-600">{error}</div>}
+//       </div>
+//     </div>
+//   )
+// }
 
 function getExplorerTxUrl(chainId: number, hash: string) {
   switch (chainId) {
     case 1:
-      return `https://etherscan.io/tx/${hash}`
+      return `https://etherscan.io/tx/${hash}`;
     case 11155111:
-      return `https://sepolia.etherscan.io/tx/${hash}`
+      return `https://sepolia.etherscan.io/tx/${hash}`;
     default:
-      return `https://etherscan.io/tx/${hash}`
+      return `https://etherscan.io/tx/${hash}`;
   }
 }
