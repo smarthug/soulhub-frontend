@@ -7,10 +7,10 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="font-extrabold text-xl text-brand-700">SoulHub</Link>
         <nav className="flex gap-4 text-sm items-center">
-          <Link to="/explore" className="hover:text-brand-600">Explore</Link>
+          {/* <Link to="/explore" className="hover:text-brand-600">Explore</Link>
           <Link to="/create" className="hover:text-brand-600">Create</Link>
           <Link to="/dashboard" className="hover:text-brand-600">Dashboard</Link>
-          <Link to="/about" className="hover:text-brand-600">About</Link>
+          <Link to="/about" className="hover:text-brand-600">About</Link> */}
         </nav>
         <div className="ml-4">
           <ConnectButton showBalance={false} />

@@ -6,6 +6,9 @@ import { CommitTimeline } from "@/components/ai/CommitTimeline";
 import { Button } from "@/components/common/Button";
 import { JsonEditor } from "@/components/forms/JsonEditor";
 import Ein from '@/mock/einstein_28years.json'
+import Mozart from '@/mock/mozart_28years.json'
+import Meoweinstein from '@/mock/meoweinstein.json'
+import Meowzart from '@/mock/meowzart.json'
 import Mermaid from "@/components/common/Mermaid";
 import DerivedCharacterCard from "./partials/DerivedCharacterCard";
 import { useAccount, useWalletClient, useSwitchChain, useConnectorClient } from "wagmi";
@@ -285,10 +288,22 @@ export default function Character() {
   const prompt =
     "You are a helpful AI character. Always provide clear, safe, and supportive answers.";
 
-  // Use a mock character JSON from the mock folder for the Prompting tab
+  // Choose character data from mocks based on route `id` (einstein / mozart)
+  const characterData = React.useMemo(() => {
+    const nameLower = (id ?? '').toLowerCase();
+    if (nameLower.includes('einstein')) return Ein;
+    if (nameLower.includes('mozart')) return Mozart;
+    return Ein; // default
+  }, [id]);
+
+  // Use selected character JSON for the Prompting tab
   const [charJsonText, setCharJsonText] = React.useState(
-    JSON.stringify(Ein, null, 2)
+    () => JSON.stringify(characterData, null, 2)
   )
+
+  React.useEffect(() => {
+    setCharJsonText(JSON.stringify(characterData, null, 2))
+  }, [characterData])
 
   // Mock mermaid git graph
   const mermaidGraph = `
@@ -392,7 +407,7 @@ export default function Character() {
       {/* Character Header */}
       <header className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{id}</h1>
+          <h1 className="text-3xl font-bold">{characterData?.name ?? id}</h1>
           <p className="text-slate-600 mt-1">
             Description text — character's purpose/personality/guide
           </p>
@@ -533,31 +548,48 @@ export default function Character() {
           <div className="border rounded-2xl p-4 bg-white">
             <p className="text-sm text-slate-600 mb-4">Characters derived or forked from this base. Use these cards to view or fork a derived character.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* mock derived characters */}
-              <DerivedCharacterCard
-                id="d1a2b3"
-                name="Einstein — Playful Tutor"
-                summary="A lighter, playful tutor persona focused on approachable explanations."
-                author="alice"
-                forkedFrom={id ?? 'base'}
-                tags={["tutor", "playful", "math"]}
-              />
-              <DerivedCharacterCard
-                id="d4e5f6"
-                name="Einstein — Stern Mentor"
-                summary="A stricter mentor variant with concise answers and formal tone."
-                author="bob"
-                forkedFrom={id ?? 'base'}
-                tags={["mentor", "concise"]}
-              />
-              <DerivedCharacterCard
-                id="d7g8h9"
-                name="Einstein — Storyteller"
-                summary="Uses analogies and stories to explain concepts for younger audiences."
-                author="carol"
-                forkedFrom={id ?? 'base'}
-                tags={["story", "kid-friendly"]}
-              />
+              {(() => {
+                const nameLower = (id ?? '').toLowerCase();
+                const cards: Array<any> = []
+                if (nameLower.includes('einstein')) {
+                  cards.push({
+                    id: 'meoweinstein',
+                    name: Meoweinstein.name || 'Meoweinstein',
+                    summary: (Meoweinstein.abilities_and_knowledge || []).slice(0,3).join(', '),
+                    author: 'community',
+                    forkedFrom: id ?? 'einstein',
+                    tags: [Meoweinstein.universe || 'derived'],
+                    image: '/images/characters/char-1-cat.jpg'
+                  })
+                }
+                if (nameLower.includes('mozart')) {
+                  cards.push({
+                    id: 'meowzart',
+                    name: Meowzart.name || 'Meowzart',
+                    summary: (Meowzart.abilities_and_knowledge || []).slice(0,3).join(', '),
+                    author: 'community',
+                    forkedFrom: id ?? 'mozart',
+                    tags: [Meowzart.universe || 'derived'],
+                    image: '/images/characters/char-2-cat.jpg'
+                  })
+                }
+
+                // Fallback: if no special deriveds, show a few generic deriveds
+                if (cards.length === 0) {
+                  return (
+                    <>
+                      <DerivedCharacterCard id="d1a2b3" name="Einstein — Playful Tutor" image="/images/characters/char-1.jpg" />
+                      <DerivedCharacterCard id="d4e5f6" name="Einstein — Stern Mentor" image="/images/characters/char-2.jpg" />
+                      <DerivedCharacterCard id="d7g8h9" name="Einstein — Storyteller" image="/images/characters/char-1.jpg" />
+                    </>
+                  )
+                }
+
+                // Render discovered cards
+                return cards.map((c) => (
+                  <DerivedCharacterCard key={c.id} id={c.id} name={c.name} image={c.image} />
+                ))
+              })()}
             </div>
           </div>
         </section>
