@@ -6,7 +6,7 @@ import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { WagmiProvider } from 'wagmi';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
-import { mainnet, sepolia } from 'viem/chains';
+import { mainnet, sepolia,flowTestnet } from 'viem/chains';
 // ...existing code...
 import App from "./App";
 import "./styles/index.css";
@@ -18,7 +18,7 @@ const qc = new QueryClient();
 
 // wagmi / rainbowkit setup (using RainbowKit helper for this repo's versions)
 // NOTE: replace projectId with your WalletConnect v2 project id for full functionality
-const wagmiConfig = getDefaultConfig({ chains: [mainnet, sepolia], appName: 'SoulHub', projectId: "595678033527d68a0a2a868baef4a826" });
+const wagmiConfig = getDefaultConfig({ chains: [flowTestnet,mainnet, sepolia], appName: 'SoulHub', projectId: "595678033527d68a0a2a868baef4a826" });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

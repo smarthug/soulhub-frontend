@@ -5,8 +5,7 @@ import { IngredientTable } from "@/components/ai/IngredientTable";
 import { CommitTimeline } from "@/components/ai/CommitTimeline";
 import { Button } from "@/components/common/Button";
 import Mermaid from "@/components/common/Mermaid";
-import { createWalletClient, custom } from 'viem'
-import { mainnet } from 'viem/chains'
+import { useAccount, useWalletClient, useSwitchChain } from 'wagmi'
 import { abi, CONTRACT_ADDRESS } from '@/lib/erc1155'
 
 // import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
@@ -410,46 +409,7 @@ export default function Character() {
             <input id="tokenId" defaultValue={1} className="border rounded px-2 py-1 w-24" />
             <label className="text-sm">Amount</label>
             <input id="amount" defaultValue={1} className="border rounded px-2 py-1 w-24" />
-            <button
-              id="mintBtn"
-              className="ml-auto px-4 py-2 rounded bg-brand-600 text-white"
-              onClick={async () => {
-                  const tokenIdEl = document.getElementById('tokenId') as HTMLInputElement
-                  const amountEl = document.getElementById('amount') as HTMLInputElement
-                  const id = Number(tokenIdEl.value || 1)
-                  const amt = Number(amountEl.value || 1)
-                  try {
-                    if (!(window as any).ethereum) {
-                      alert('No injected wallet found. Please install Rainbow or another injected wallet.')
-                      return
-                    }
-                    // request accounts
-                    const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
-                    const account = accounts[0]
-
-                    const walletClient = createWalletClient({
-                      chain: mainnet,
-                      transport: custom((window as any).ethereum),
-                    })
-
-                    const txHash = await walletClient.writeContract({
-                      address: CONTRACT_ADDRESS as `0x${string}`,
-                      abi: abi as any,
-                      functionName: 'mint',
-                      account: account as `0x${string}`,
-                      args: [account, BigInt(id), BigInt(amt), '0x'],
-                    })
-
-                    console.log('mint tx hash', txHash)
-                    alert('Mint transaction sent: ' + String(txHash))
-                  } catch (e) {
-                    console.error('mint error', e)
-                    alert('Mint failed: ' + ((e as any)?.message ?? String(e)))
-                  }
-                }}
-            >
-              Mint
-            </button>
+            <MintButton />
           </div>
         </div>
       </section>
@@ -519,4 +479,98 @@ export default function Character() {
       )}
     </section>
   );
+}
+
+function MintButton() {
+  const { address } = useAccount()
+  const { data: walletClient } = useWalletClient()
+  const { switchChain } = useSwitchChain?.() as any
+
+  const [isMinting, setIsMinting] = React.useState(false)
+  const [txHash, setTxHash] = React.useState<string | null>(null)
+  const [error, setError] = React.useState<string | null>(null)
+
+  const desiredChainId = 1 // mainnet
+
+  const handleMint = async () => {
+    const tokenIdEl = document.getElementById('tokenId') as HTMLInputElement
+    const amountEl = document.getElementById('amount') as HTMLInputElement
+    const id = Number(tokenIdEl.value || 1)
+    const amt = Number(amountEl.value || 1)
+
+    try {
+      setError(null)
+      setTxHash(null)
+
+      if (!address) {
+        setError('Please connect your wallet first')
+        return
+      }
+      if (!walletClient) {
+        setError('Wallet client not ready')
+        return
+      }
+
+      const currentChainId = Number((window as any)?.ethereum?.chainId ?? 0)
+   
+
+      setIsMinting(true)
+      const hash = await walletClient.writeContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: abi as any,
+        functionName: 'mint',
+        args: [address as `0x${string}`, BigInt(id), BigInt(amt), '0x'],
+      })
+
+      setTxHash(String(hash))
+      setIsMinting(false)
+    } catch (e) {
+      console.error('mint error', e)
+      setError((e as any)?.message ?? String(e))
+      setIsMinting(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        id="mintBtn"
+        className={`ml-auto px-4 py-2 rounded text-white ${isMinting ? 'bg-slate-400' : 'bg-brand-600 hover:bg-brand-700'}`}
+        onClick={handleMint}
+        disabled={isMinting}
+      >
+        {isMinting ? 'Minting…' : 'Mint'}
+      </button>
+
+   
+
+      {/* Status / link */}
+      <div className="text-sm">
+        {txHash && (
+          <div>
+            <a
+              className="text-brand-600 underline"
+              href={getExplorerTxUrl(Number((window as any)?.ethereum?.chainId ?? desiredChainId), txHash)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View tx
+            </a>
+          </div>
+        )}
+        {error && <div className="text-red-600">{error}</div>}
+      </div>
+    </div>
+  )
+}
+
+function getExplorerTxUrl(chainId: number, hash: string) {
+  switch (chainId) {
+    case 1:
+      return `https://etherscan.io/tx/${hash}`
+    case 11155111:
+      return `https://sepolia.etherscan.io/tx/${hash}`
+    default:
+      return `https://etherscan.io/tx/${hash}`
+  }
 }
