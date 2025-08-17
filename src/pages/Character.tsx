@@ -305,6 +305,109 @@ export default function Character() {
     setCharJsonText(JSON.stringify(characterData, null, 2))
   }, [characterData])
 
+  // --- Small inline chart components (no external deps) ---
+  type KV = { label: string; value: number }
+
+  const RadarChart: React.FC<{ data: KV[]; size?: number }> = ({ data, size = 240 }) => {
+    const cx = size / 2
+    const cy = size / 2
+    const levels = 4
+    const radius = size * 0.38
+    const angleStep = (Math.PI * 2) / data.length
+
+    const scaleValue = (v: number) => (v + 1) / 2 // map -1..1 to 0..1
+
+    const points = data
+      .map((d, i) => {
+        const r = radius * scaleValue(d.value)
+        const angle = -Math.PI / 2 + i * angleStep
+        const x = cx + r * Math.cos(angle)
+        const y = cy + r * Math.sin(angle)
+        return `${x},${y}`
+      })
+      .join(" ")
+
+    return (
+      <svg width={size} height={size} className="mx-auto">
+        {/* concentric levels */}
+        {[...Array(levels)].map((_, li) => {
+          const r = radius * ((li + 1) / levels)
+          const levelPoints = data
+            .map((_, i) => {
+              const angle = -Math.PI / 2 + i * angleStep
+              const x = cx + r * Math.cos(angle)
+              const y = cy + r * Math.sin(angle)
+              return `${x},${y}`
+            })
+            .join(" ")
+          return (
+            <polyline
+              key={li}
+              points={levelPoints}
+              fill="none"
+              stroke="#e6edf3"
+              strokeWidth={1}
+            />
+          )
+        })}
+
+        {/* axis lines */}
+        {data.map((d, i) => {
+          const angle = -Math.PI / 2 + i * angleStep
+          const x = cx + radius * Math.cos(angle)
+          const y = cy + radius * Math.sin(angle)
+          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef2f7" />
+        })}
+
+        {/* data polygon */}
+        <polygon points={points} fill="#60a5fa50" stroke="#60a5fa" strokeWidth={2} />
+
+        {/* labels */}
+        {data.map((d, i) => {
+          const angle = -Math.PI / 2 + i * angleStep
+          const lx = cx + (radius + 14) * Math.cos(angle)
+          const ly = cy + (radius + 14) * Math.sin(angle)
+          const anchor = Math.abs(Math.cos(angle)) < 0.3 ? 'middle' : (Math.cos(angle) > 0 ? 'start' : 'end')
+          return (
+            <text key={i} x={lx} y={ly} fontSize={11} fill="#334155" textAnchor={anchor} dominantBaseline="middle">
+              {d.label}
+            </text>
+          )
+        })}
+      </svg>
+    )
+  }
+
+  const SimpleBarChart: React.FC<{ data: KV[]; width?: number; height?: number }> = ({ data, width = 360, height = 180 }) => {
+    const padding = 20
+    const innerW = width - padding * 2
+    const innerH = height - padding * 2
+    const max = Math.max(...data.map((d) => d.value), 1)
+    const barW = innerW / data.length - 10
+
+    return (
+      <svg width={width} height={height} className="mx-auto">
+        {data.map((d, i) => {
+          const x = padding + i * (barW + 10)
+          const h = (d.value / max) * innerH
+          const y = padding + (innerH - h)
+          return (
+            <g key={d.label}>
+              <rect x={x} y={y} width={barW} height={h} rx={4} fill="#7c3aed" />
+              <text x={x + barW / 2} y={padding + innerH + 14} fontSize={11} fill="#334155" textAnchor="middle">
+                {d.label}
+              </text>
+              <text x={x + barW / 2} y={y - 6} fontSize={11} fill="#111827" textAnchor="middle">
+                {d.value}
+              </text>
+            </g>
+          )
+        })}
+      </svg>
+    )
+  }
+  // --- end inline charts ---
+
   // Mock mermaid git graph
   const mermaidGraph = `
       gitGraph:
@@ -536,8 +639,55 @@ export default function Character() {
       {tab === "personality" && (
         <section>
           <h2 className="font-semibold mb-4">Personality</h2>
-          <div className="border rounded-2xl p-4 bg-white text-slate-700 text-sm">
-            {persona}
+          <div className="border rounded-2xl p-4 bg-white text-slate-700 text-sm space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Interactive Traits</h3>
+                {characterData?.personality_interactive ? (
+                  <RadarChart
+                    data={Object.entries(characterData.personality_interactive).map(([k, v]) => ({ label: k.replace(/_/g, ' '), value: Number(v) }))}
+                    size={260}
+                  />
+                ) : (
+                  <div className="text-sm text-slate-500">No trait data available.</div>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium mb-2">Personal History (by age)</h3>
+                {Array.isArray(characterData?.personal_history) && characterData.personal_history.length > 0 ? (
+                  <>
+                    <SimpleBarChart
+                      data={(() => {
+                        const counts: Record<number, number> = {} as Record<number, number>
+                        (characterData.personal_history || []).forEach((ev: any) => {
+                          const a = Number(ev.age || 0)
+                          counts[a] = (counts[a] || 0) + 1
+                        })
+                        return Object.keys(counts)
+                          .sort((a, b) => Number(a) - Number(b))
+                          .map((age) => ({ label: String(age), value: counts[Number(age)] }))
+                      })()}
+                      width={360}
+                      height={200}
+                    />
+
+                    <div className="mt-3 text-sm text-slate-600">
+                      <ul className="list-disc pl-5 space-y-2">
+                        {(characterData.personal_history || []).map((ev: any, i: number) => (
+                          <li key={i}>
+                            <strong>{ev.event_name}</strong> ({ev.age}) — {ev.event_type}: {ev.description}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-sm text-slate-500">No personal history available.</div>
+                )}
+              </div>
+            </div>
+            <div className="text-sm text-slate-500">{persona}</div>
           </div>
         </section>
       )}
