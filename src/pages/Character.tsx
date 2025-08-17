@@ -8,6 +8,9 @@ import Mermaid from "@/components/common/Mermaid";
 import { useAccount, useWalletClient, useSwitchChain } from 'wagmi'
 import { abi, CONTRACT_ADDRESS } from '@/lib/erc1155'
 
+import { createPublicClient, createWalletClient, custom, encodeFunctionData, http } from 'viem'
+import { flowTestnet } from "viem/chains";
+
 // import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 // import { WalrusClient } from '@mysten/walrus';
 
@@ -483,6 +486,12 @@ export default function Character() {
 
 function MintButton() {
   const { address } = useAccount()
+
+      const publicClient = createPublicClient({
+      chain: flowTestnet,
+      transport: http()
+    })
+
   const { data: walletClient } = useWalletClient()
   const { switchChain } = useSwitchChain?.() as any
 
@@ -515,15 +524,43 @@ function MintButton() {
    
 
       setIsMinting(true)
-      const hash = await walletClient.writeContract({
-        address: CONTRACT_ADDRESS as `0x${string}`,
-        abi: abi as any,
-        functionName: 'mint',
-        args: [address as `0x${string}`, BigInt(id), BigInt(amt), '0x'],
-      })
 
-      setTxHash(String(hash))
-      setIsMinting(false)
+      // simulate via publicClient to obtain a request object for writeContract
+      let request: any
+      try {
+        const sim = await (publicClient as any).simulateContract({
+          account: address as `0x${string}`,
+          address: CONTRACT_ADDRESS as `0x${string}`,
+          abi: abi as any,
+          functionName: 'mint',
+          args: [address as `0x${string}`, BigInt(id), BigInt(amt), '0x'],
+        })
+        request = (sim as any).request ?? sim
+      } catch (simErr) {
+        setIsMinting(false)
+        console.error('simulation failed', simErr)
+        setError('Simulation failed: ' + ((simErr as any)?.message ?? String(simErr)))
+        return
+      }
+
+      // send transaction using the wallet client with the prepared request
+      let tx: `0x${string}`
+      try {
+        tx = await (walletClient as any).writeContract(request)
+        setTxHash(String(tx))
+        // attempt to fetch receipt (may be null until mined)
+        try {
+          const receipt = await (publicClient as any).getTransactionReceipt({ hash: tx })
+          console.log('Transaction receipt:', receipt)
+        } catch (rcptErr) {
+          console.warn('Could not fetch receipt immediately:', rcptErr)
+        }
+      } catch (sendErr) {
+        console.error('Failed to send transaction:', sendErr)
+        setError('Failed to send transaction: ' + ((sendErr as any)?.message ?? String(sendErr)))
+      } finally {
+        setIsMinting(false)
+      }
     } catch (e) {
       console.error('mint error', e)
       setError((e as any)?.message ?? String(e))
