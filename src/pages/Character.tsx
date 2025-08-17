@@ -5,6 +5,9 @@ import { IngredientTable } from "@/components/ai/IngredientTable";
 import { CommitTimeline } from "@/components/ai/CommitTimeline";
 import { Button } from "@/components/common/Button";
 import Mermaid from "@/components/common/Mermaid";
+import { createWalletClient, custom } from 'viem'
+import { mainnet } from 'viem/chains'
+import { abi, CONTRACT_ADDRESS } from '@/lib/erc1155'
 
 // import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 // import { WalrusClient } from '@mysten/walrus';
@@ -178,6 +181,7 @@ flowchart TD
 
 export default function Character() {
   const { id } = useParams();
+  // no-op: mint handled imperatively via viem wallet client on click
   // Harmfulness categories
 
   // Harmfulness categories
@@ -398,6 +402,57 @@ export default function Character() {
       </header>
 
       {/* Tab Content */}
+      <section>
+        <h2 className="font-semibold mb-4">Mint NFT</h2>
+        <div className="border rounded-2xl p-4 bg-white">
+          <div className="flex gap-3 items-center">
+            <label className="text-sm">Token ID</label>
+            <input id="tokenId" defaultValue={1} className="border rounded px-2 py-1 w-24" />
+            <label className="text-sm">Amount</label>
+            <input id="amount" defaultValue={1} className="border rounded px-2 py-1 w-24" />
+            <button
+              id="mintBtn"
+              className="ml-auto px-4 py-2 rounded bg-brand-600 text-white"
+              onClick={async () => {
+                  const tokenIdEl = document.getElementById('tokenId') as HTMLInputElement
+                  const amountEl = document.getElementById('amount') as HTMLInputElement
+                  const id = Number(tokenIdEl.value || 1)
+                  const amt = Number(amountEl.value || 1)
+                  try {
+                    if (!(window as any).ethereum) {
+                      alert('No injected wallet found. Please install Rainbow or another injected wallet.')
+                      return
+                    }
+                    // request accounts
+                    const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
+                    const account = accounts[0]
+
+                    const walletClient = createWalletClient({
+                      chain: mainnet,
+                      transport: custom((window as any).ethereum),
+                    })
+
+                    const txHash = await walletClient.writeContract({
+                      address: CONTRACT_ADDRESS as `0x${string}`,
+                      abi: abi as any,
+                      functionName: 'mint',
+                      account: account as `0x${string}`,
+                      args: [account, BigInt(id), BigInt(amt), '0x'],
+                    })
+
+                    console.log('mint tx hash', txHash)
+                    alert('Mint transaction sent: ' + String(txHash))
+                  } catch (e) {
+                    console.error('mint error', e)
+                    alert('Mint failed: ' + ((e as any)?.message ?? String(e)))
+                  }
+                }}
+            >
+              Mint
+            </button>
+          </div>
+        </div>
+      </section>
       {tab === "git" && (
         <section>
           <h2 className="font-semibold mb-4">Git Graph</h2>
