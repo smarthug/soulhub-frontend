@@ -4,6 +4,8 @@ import { SafetySeal } from "@/components/ai/SafetySeal";
 import { IngredientTable } from "@/components/ai/IngredientTable";
 import { CommitTimeline } from "@/components/ai/CommitTimeline";
 import { Button } from "@/components/common/Button";
+import { JsonEditor } from "@/components/forms/JsonEditor";
+import Ein from '@/mock/einstein_28years.json'
 import Mermaid from "@/components/common/Mermaid";
 import { useAccount, useWalletClient, useSwitchChain, useConnectorClient } from "wagmi";
 import { abi, CONTRACT_ADDRESS } from "@/lib/erc1155";
@@ -271,6 +273,11 @@ export default function Character() {
   const prompt =
     "You are a helpful AI character. Always provide clear, safe, and supportive answers.";
 
+  // Use a mock character JSON from the mock folder for the Prompting tab
+  const [charJsonText, setCharJsonText] = React.useState(
+    JSON.stringify(Ein, null, 2)
+  )
+
   // Mock mermaid git graph
   const mermaidGraph = `
       gitGraph:
@@ -450,7 +457,18 @@ export default function Character() {
         <section>
           <h2 className="font-semibold mb-4">Prompting</h2>
           <div className="border rounded-2xl p-4 bg-white text-slate-700 text-sm">
-            {prompt}
+            <div className="mb-4 text-sm">{prompt}</div>
+            <div className="mt-2">
+              <JsonEditor value={charJsonText} onChange={() => {}} />
+              <div className="flex justify-end gap-2 mt-3">
+                <button
+                  className="px-3 py-1 rounded bg-slate-100 text-sm"
+                  onClick={() => navigator.clipboard?.writeText(charJsonText)}
+                >
+                  Copy JSON
+                </button>
+              </div>
+            </div>
           </div>
           <div className="flex justify-end mt-6">
             <Button
@@ -620,25 +638,47 @@ function MintButton() {
       "type": "function"
     }]
 
-    const [account] = await walletClient.getAddresses()
-    const { request } = await publicClient.simulateContract({
-      account,
-      address: erc1155Address,
-      abi: abi,
-      functionName: 'mint',
-      args: ['0xfa6Cc5134a2e81a2F19113992Ef61F9BE81cafdE', 0, 1, ""]
-    })
-
-
-    let tx: `0x${string}`;
     try {
-      tx = await walletClient.writeContract(request)
-      console.log('Transaction hash:', tx);
-      // handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
-      const receipt = await publicClient.getTransactionReceipt({ hash: tx });
-      console.log('Transaction receipt:', receipt);
-    } catch (error: any) {
-      console.error('Failed to send transaction:', error);
+      setError(null)
+      setTxHash(null)
+      setIsMinting(true)
+
+      if (!walletClient) {
+        setError('Wallet client not ready')
+        return
+      }
+
+      const addresses = await (walletClient as any).getAddresses()
+      const account = addresses?.[0]
+      if (!account) {
+        setError('No account available from wallet')
+        return
+      }
+
+      const { request } = await publicClient.simulateContract({
+        account,
+        address: erc1155Address,
+        abi: abi,
+        functionName: 'mint',
+        args: ['0xfa6Cc5134a2e81a2F19113992Ef61F9BE81cafdE', 0, 1, ""]
+      })
+
+      let tx: `0x${string}`;
+      try {
+        tx = await (walletClient as any).writeContract(request)
+        console.log('Transaction hash:', tx);
+        setTxHash(String(tx))
+        const receipt = await publicClient.getTransactionReceipt({ hash: tx });
+        console.log('Transaction receipt:', receipt);
+      } catch (error: any) {
+        console.error('Failed to send transaction:', error);
+        setError(error?.message ?? String(error))
+      }
+    } catch (e: any) {
+      console.error('mint flow error', e)
+      setError(e?.message ?? String(e))
+    } finally {
+      setIsMinting(false)
     }
   };
 
