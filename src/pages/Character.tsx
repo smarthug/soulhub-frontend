@@ -7,6 +7,7 @@ import { Button } from "@/components/common/Button";
 import { JsonEditor } from "@/components/forms/JsonEditor";
 import Ein from '@/mock/einstein_28years.json'
 import Mermaid from "@/components/common/Mermaid";
+import DerivedCharacterCard from "./partials/DerivedCharacterCard";
 import { useAccount, useWalletClient, useSwitchChain, useConnectorClient } from "wagmi";
 import { abi, CONTRACT_ADDRESS } from "@/lib/erc1155";
 
@@ -205,6 +206,17 @@ export default function Character() {
     { key: "Gambling", color: "bg-blue-200" },
   ];
 
+  // Mock numeric scores for harmfulness (0-100)
+  const harmfulnessScores: Record<string, number> = {
+  Horror: 8,
+  Violence: 30,
+  Sexuality: 6,
+  "Inappropriate Language": 20,
+  Drugs: 2,
+  Crime: 12,
+  Gambling: 1,
+  }
+
   // Example commit data with age rating and harmfulness
   const commits = [
     {
@@ -343,6 +355,16 @@ export default function Character() {
             onClick={() => setTab("personality")}
           >
             Personality
+          </button>
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "derived"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("derived")}
+          >
+            Derived Characters
           </button>
           <button
             className={`px-4 py-2 font-medium rounded-t-md ${
@@ -505,22 +527,64 @@ export default function Character() {
         </section>
       )}
 
+      {tab === "derived" && (
+        <section>
+          <h2 className="font-semibold mb-4">Derived Characters</h2>
+          <div className="border rounded-2xl p-4 bg-white">
+            <p className="text-sm text-slate-600 mb-4">Characters derived or forked from this base. Use these cards to view or fork a derived character.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* mock derived characters */}
+              <DerivedCharacterCard
+                id="d1a2b3"
+                name="Einstein — Playful Tutor"
+                summary="A lighter, playful tutor persona focused on approachable explanations."
+                author="alice"
+                forkedFrom={id ?? 'base'}
+                tags={["tutor", "playful", "math"]}
+              />
+              <DerivedCharacterCard
+                id="d4e5f6"
+                name="Einstein — Stern Mentor"
+                summary="A stricter mentor variant with concise answers and formal tone."
+                author="bob"
+                forkedFrom={id ?? 'base'}
+                tags={["mentor", "concise"]}
+              />
+              <DerivedCharacterCard
+                id="d7g8h9"
+                name="Einstein — Storyteller"
+                summary="Uses analogies and stories to explain concepts for younger audiences."
+                author="carol"
+                forkedFrom={id ?? 'base'}
+                tags={["story", "kid-friendly"]}
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
       {tab === "harm" && (
         <section>
           <h2 className="font-semibold mb-4">Harmfulness Levels</h2>
           <div className="border rounded-2xl p-4 bg-white">
-            <div className="flex gap-2 flex-wrap">
+            <div className="space-y-3">
               {harmfulness.map((h) => (
-                <span
-                  key={h.key}
-                  className={`inline-flex items-center px-3 py-2 rounded text-sm font-medium ${h.color}`}
-                >
-                  {h.key}
-                </span>
+                <div key={h.key} className="flex items-center gap-3">
+                  <div className="w-48 text-sm text-slate-600">{h.key}</div>
+                  <div className="flex-1 bg-slate-100 rounded h-4 overflow-hidden">
+                    <div
+                      className={`h-4 rounded ${h.color}`}
+                      style={{ width: `${harmfulnessScores[h.key] ?? 0}%` }}
+                    />
+                  </div>
+                  <div className="w-12 text-right text-sm text-slate-700">
+                    {harmfulnessScores[h.key]}%
+                  </div>
+                </div>
               ))}
             </div>
             <div className="text-xs text-slate-400 mt-2">
-              * These levels are used for intuitive safety marking.
+              * Numeric score is a mock value (0-100) for demonstration.
             </div>
           </div>
         </section>
