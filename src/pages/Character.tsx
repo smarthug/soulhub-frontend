@@ -326,6 +326,16 @@ export default function Character() {
           </button>
           <button
             className={`px-4 py-2 font-medium rounded-t-md ${
+              tab === "donate"
+                ? "bg-white border-x border-t border-b-0"
+                : "bg-slate-100"
+            }`}
+            onClick={() => setTab("donate")}
+          >
+            Donate
+          </button>
+          <button
+            className={`px-4 py-2 font-medium rounded-t-md ${
               tab === "personality"
                 ? "bg-white border-x border-t border-b-0"
                 : "bg-slate-100"
@@ -416,27 +426,7 @@ export default function Character() {
         </div>
       </header>
 
-      {/* Tab Content */}
-      <section>
-        <h2 className="font-semibold mb-4">Mint NFT</h2>
-        <div className="border rounded-2xl p-4 bg-white">
-          <div className="flex gap-3 items-center">
-            <label className="text-sm">Token ID</label>
-            <input
-              id="tokenId"
-              defaultValue={1}
-              className="border rounded px-2 py-1 w-24"
-            />
-            <label className="text-sm">Amount</label>
-            <input
-              id="amount"
-              defaultValue={1}
-              className="border rounded px-2 py-1 w-24"
-            />
-            <MintButton />
-          </div>
-        </div>
-      </section>
+  {/* Tab Content */}
       {tab === "git" && (
         <section>
           <h2 className="font-semibold mb-4">Git Graph</h2>
@@ -479,6 +469,29 @@ export default function Character() {
             >
               Commit
             </Button>
+          </div>
+        </section>
+      )}
+
+      {tab === "donate" && (
+        <section>
+          <h2 className="font-semibold mb-4">Donate / Mint NFT</h2>
+          <div className="border rounded-2xl p-4 bg-white">
+            <div className="flex gap-3 items-center">
+              <label className="text-sm">Token ID</label>
+              <input
+                id="tokenId"
+                defaultValue={1}
+                className="border rounded px-2 py-1 w-24"
+              />
+              <label className="text-sm">Amount</label>
+              <input
+                id="amount"
+                defaultValue={1}
+                className="border rounded px-2 py-1 w-24"
+              />
+              <MintButton />
+            </div>
           </div>
         </section>
       )}
