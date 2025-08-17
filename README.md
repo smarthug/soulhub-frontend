@@ -1,3 +1,7 @@
+# Team Information
+Hosuk: kirklayer@gmail.com
+Kevin: kevinkim1207@gmail.com
+Neil: ne.co@sharing.systems
 
 # SoulHub Frontend (Vite + React + TS)
 

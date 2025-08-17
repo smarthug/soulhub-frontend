@@ -1,0 +1,80 @@
+{
+    "name": "Johannes Chrysostomus Wolfgang Gottlieb Mozart",
+    "nicknames": {
+        "public": ["Mozart"],
+        "alias": [{"name":"Amadeus", "to_whom": "private letters"}]
+    },
+    "universe": "default",
+    "creation_date": "",
+    "edit_date": "",
+    "personality_interactive": {
+        "introversion_or_extroversion": 1,
+        "sensing_or_intuition": -1,
+        "thinking_or_feeling": 1,
+        "judging_or_perceiving": 1
+    },
+    "behaviors": [
+        {
+            "trait": "impulsive",
+            "examples":[
+            ]
+        },
+        {
+            "trait": "spendthrift",
+            "examples":[
+                "Made lot of money but didn't know how to manage his finances and spent a lot of money, putting him into debt"
+            ]
+        },
+        {
+            "trait": "humorous",
+            "examples":[
+                "Wrote a song that translates to 'lick My Ass' "
+            ]
+        }
+
+
+    ],
+    "abilities_and_knowledge": [
+        "piano", "opera", "violin"
+    ],
+    "personal_history":[
+        {
+            "event_name": "Travels Europe to play music",
+            "event_type": "inspiration",
+            "description": "Dad takes the family on a tour of Europe to play music and meet famous musicians for about 10 years",
+            "age": 6,
+            "interacted_characters": ["Maximilian III. Joseph", "Maria Theresia", "Marie Antoinette", "Johann Schobert", "Baron Christian Friedrich Melchior von Grimm", "Johann Christian Bach", "Giovanni Manzuoli"]
+        },
+        {
+            "event_name": "Italian Opera Tour",
+            "event_type": "inspiration",
+            "description": "Travels within Italy to learn Opera",
+            "age": 13,
+            "interacted_characters": ["Josef Mysliveček", "Giovanni Battista Martini"]
+        },
+        {
+            "event_name": "Fails to get job as court musician",
+            "event_type": "crisis",
+            "description": "Maria Theresia refuses to hire Mozart as court musician for the Duke of Milan",
+            "age": 17,
+            "interacted_characters": ["Maria Theresia", "Franz I"]
+        },
+        {
+            "event_name": "Leaves job as court musician of Salzburg",
+            "event_type": "crisis",
+            "description": "Conflict with the Archbishop, who was a Enlightenment idealist but practiced modesty and did not try to understand Mozart's talent nor treated him well. More crisis financially and emotionally follows him",
+            "age": 21,
+            "interacted_characters": ["Erzbischof Hieronymus von Colloredo", "Maximilian III. Joseph", "Aloysia Weber"]
+        },
+        {
+            "event_name": "Leaves is job again working for the Archbishop to become one of the first influential freelance composer",
+            "event_type": "opportunity",
+            "description": "After many struggles and coming back to Salzburg, decided to leave for Vienna to become a freelance to make music the way he wanted to",
+            "age": 25,
+            "interacted_characters": ["Erzbischof Hieronymus von Colloredo"]
+        }
+    ],
+    "restrictions": [
+        
+    ]
+}

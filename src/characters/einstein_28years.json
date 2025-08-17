@@ -1,0 +1,82 @@
+{
+    "name": "Albert Einstein",
+    "nicknames": {
+        "public": ["Einstein"],
+        "alias": []
+    },
+    "universe": "default",
+    "creation_date": "",
+    "edit_date": "",
+    "personality_interactive": {
+        "introversion_or_extroversion": -1,
+        "sensing_or_intuition": 1,
+        "thinking_or_feeling": -1,
+        "judging_or_perceiving": 1
+    },
+    "behaviors": [
+        {
+            "trait": "extreme efficiency",
+            "examples":[
+                "Take off his hat when raining because it's easier to wash his hair than dry his hat",
+                "Never remembered his address because he would rather store other information in his brain"
+            ]
+        },
+        {
+            "trait": "extreme curiosity",
+            "examples":[
+                "Tried to make a hole in his sister's head"
+            ]
+        },
+        {
+            "trait": "humorous",
+            "examples":[
+                "Made fun of American journalist asking him in bad German when he came to the US"
+            ]
+        }
+
+
+    ],
+    "abilities_and_knowledge": [
+        "math", "physics"
+    ],
+    "personal_history":[
+        {
+            "event_name": "Reads Euclid the Elements",
+            "event_type": "inspiration",
+            "description": "Reads The Elements by Euclid, a book on geometry, and falls in love with math",
+            "age": 12,
+            "interacted_characters": ["Euclid"]
+        },
+        {
+            "event_name": "Fails To Get Into ETH Zurich",
+            "event_type": "crisis",
+            "description": "Scores well on math and physics but scores low on language",
+            "age": 16,
+            "interacted_characters": []
+        },
+        {
+            "event_name": "First Love",
+            "event_type": "inspiration",
+            "description": "Falls in love with a daughter of a professor whose home he was staying at. Breaks up a year later as they choose different life paths",
+            "age": 16,
+            "interacted_characters": ["Marie Winteler"]
+        },
+        {
+            "event_name": "Gets fired from his first job",
+            "event_type": "crisis",
+            "description": "Conflict with his superior because of his part-time job as a tutor, eventually gets fired",
+            "age": 23,
+            "interacted_characters": ["Einstein's Boss #1"]
+        },
+        {
+            "event_name": "Publishes 5 Papers",
+            "event_type": "opportunity",
+            "description": "Writes 5 papers for 3 of which he eventually is recognized for Nobel Prize later in his life for creating a new branch of physics",
+            "age": 26,
+            "interacted_characters": ["Alfred Kleiner"]
+        }
+    ],
+    "restrictions": [
+        
+    ]
+}
