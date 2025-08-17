@@ -617,20 +617,36 @@ export default function Character() {
         <section>
           <h2 className="font-semibold mb-4">Donate / Mint NFT</h2>
           <div className="border rounded-2xl p-4 bg-white">
-            <div className="flex gap-3 items-center">
-              <label className="text-sm">Token ID</label>
-              <input
-                id="tokenId"
-                defaultValue={1}
-                className="border rounded px-2 py-1 w-24"
-              />
-              <label className="text-sm">Amount</label>
-              <input
-                id="amount"
-                defaultValue={1}
-                className="border rounded px-2 py-1 w-24"
-              />
-              <MintButton />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <div className="md:col-span-1">
+                <div className="rounded-lg overflow-hidden shadow-lg">
+                  <img
+                    src="/images/mascot/givememoney.jpeg"
+                    alt="Give me money"
+                    className="w-full h-[40rem] md:h-[48rem] object-cover"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/favicon.svg' }}
+                  />
+                </div>
+                <div className="mt-3 text-sm text-slate-600">Support this character's development — donations help fund compute, data curation, and safety reviews.</div>
+              </div>
+
+              <div className="md:col-span-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+                  <label className="text-sm">Token ID</label>
+                  <input id="tokenId" defaultValue={1} className="border rounded px-2 py-1 w-24" />
+                  <label className="text-sm">Amount</label>
+                  <input id="amount" defaultValue={1} className="border rounded px-2 py-1 w-24" />
+                  <div className="ml-auto mt-3 sm:mt-0">
+                    <MintButton />
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center gap-3">
+                  <button className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700">Donate with Card</button>
+                  <button className="px-4 py-2 border rounded-md">Share</button>
+                  <div className="text-sm text-slate-500 ml-auto">Your contribution is tax-deductible where applicable.</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
